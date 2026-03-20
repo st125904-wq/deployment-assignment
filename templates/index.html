@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Fraud Predictor</title>
+  <style>
+    body { 
+      font-family: Arial, sans-serif; 
+      margin: 40px; 
+    }
+    .form-group { 
+      margin-bottom: 10px; 
+    }
+    label { 
+      display: inline-block; 
+      width: 150px; 
+    }
+    input, select { 
+      padding: 5px; 
+      width: 200px; 
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Fraud Detection ML Model</h2>
+
+  <div class="form-group">
+    <label>Amount ($):</label>
+    <input type="number" id="amount" placeholder="e.g. 150.50" step="0.01">
+  </div>
+
+  <div class="form-group">
+    <label>Transaction Type:</label>
+    <select id="transaction_type">
+      <option value="ATM">ATM</option>
+      <option value="QR">QR</option>
+      <option value="Online">Online</option>
+      <option value="POS">POS</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label>Merchant Category:</label>
+    <select id="merchant_category">
+      <option value="Travel">Travel</option>
+      <option value="Food">Food</option>
+      <option value="Clothing">Clothing</option>
+      <option value="Grocery">Grocery</option>
+      <option value="Electronics">Electronics</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label>Country:</label>
+    <select id="country">
+      <option value="US">US</option>
+      <option value="TR">TR</option>
+      <option value="FR">FR</option>
+      <option value="DE">DE</option>
+      <option value="UK">UK</option>
+      <option value="NG">NG</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label>Hour (0-23):</label>
+    <input type="number" id="hour" placeholder="e.g. 14">
+  </div>
+
+  <div class="form-group">
+    <label>Device Risk Score:</label>
+    <input type="number" id="device_risk_score" placeholder="0.0 to 1.0" step="0.01">
+  </div>
+
+  <div class="form-group">
+    <label>IP Risk Score:</label>
+    <input type="number" id="ip_risk_score" placeholder="0.0 to 1.0" step="0.01">
+  </div>
+
+  <button onclick="sendData()" style="margin-top: 15px; padding: 10px 20px;">Predict</button>
+
+  <h3 id="result" style="color: blue;"></h3>
+
+  <script>
+    async function sendData() {
+      // Gather all data from the form
+      const data = {
+        amount: parseFloat(document.getElementById('amount').value),
+        transaction_type: document.getElementById('transaction_type').value,
+        merchant_category: document.getElementById('merchant_category').value,
+        country: document.getElementById('country').value,
+        hour: parseInt(document.getElementById('hour').value),
+        device_risk_score: parseFloat(document.getElementById('device_risk_score').value),
+        ip_risk_score: parseFloat(document.getElementById('ip_risk_score').value)
+      };
+
+      try {
+        const response = await fetch('/predict', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        document.getElementById('result').innerText = "Prediction: " + result.prediction;
+      } catch (error) {
+        console.error("Error fetching prediction:", error);
+        document.getElementById('result').innerText = "Error: Could not connect to the server.";
+      }
+    }
+  </script>
+
+</body>
+</html>
